@@ -1,0 +1,51 @@
+{
+  "name": "blackpoint-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Blackpoint Cyber CompassOne - MDR security platform",
+  "author": "WYRE Technology",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/wyre-technology/blackpoint-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wyre-technology/blackpoint-mcp.git"
+  },
+  "capabilities": {
+    "tools": {
+      "description": "Security operations for Blackpoint Cyber CompassOne",
+      "domains": [
+        "tenants",
+        "assets",
+        "detections",
+        "vulnerabilities"
+      ]
+    }
+  },
+  "configuration": {
+    "required": [
+      "BLACKPOINT_API_TOKEN"
+    ],
+    "optional": [
+      "BLACKPOINT_BASE_URL",
+      "LOG_LEVEL"
+    ]
+  },
+  "transport": {
+    "stdio": {
+      "command": "blackpoint-mcp"
+    },
+    "http": {
+      "environment": {
+        "MCP_TRANSPORT": "http",
+        "MCP_HTTP_PORT": "8080"
+      }
+    }
+  },
+  "keywords": [
+    "blackpoint",
+    "compassone",
+    "security",
+    "mdr",
+    "mcp",
+    "model-context-protocol"
+  ]
+}
