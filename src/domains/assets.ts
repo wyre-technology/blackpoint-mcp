@@ -1,4 +1,5 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { AssetClass, AssetListParams } from '@wyre-technology/node-blackpoint';
 import type { DomainHandler, CallToolResult, RequestHandlerExtra } from '../utils/types.js';
 import { getClient } from '../utils/client.js';
 import { logger } from '../utils/logger.js';
@@ -122,14 +123,13 @@ async function handleCall(
 
   switch (toolName) {
     case 'blackpoint_assets_list': {
-      const assetClass = args.class as string;
-      const params = {
-        class: assetClass,
+      const params: AssetListParams = {
+        class: args.class as AssetClass,
         search: args.search as string | undefined,
         page: args.page as number | undefined,
         pageSize: args.pageSize as number | undefined,
         tenantId: args.tenantId as string | undefined,
-      } as const;
+      };
 
       try {
         const response = await client.assets.list(params);
@@ -139,7 +139,7 @@ async function handleCall(
         const pagination = Array.isArray(response) ? null : response?.pagination;
 
         const summary = [
-          `Found ${items.length} ${assetClass} assets`,
+          `Found ${items.length} ${params.class} assets`,
           pagination ? `(Page ${pagination.page || 1} of ${Math.ceil((pagination.totalCount || 0) / (pagination.pageSize || 50))})` : '',
         ].filter(Boolean).join(' ');
 

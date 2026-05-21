@@ -39,8 +39,10 @@ export function createMcpServer(): Server {
 
     try {
       const handler = getCurrentDomainHandler();
+      // MCP SDK's CallToolRequest doesn't expose a JSON-RPC `id` to handlers
+      // (the envelope is stripped). RequestHandlerExtra.requestId is optional;
+      // omit it rather than fabricate one.
       const result = await handler.handleCall(name, args || {}, {
-        requestId: request.id?.toString(),
         meta: { serverName: 'blackpoint-mcp' },
       });
 
