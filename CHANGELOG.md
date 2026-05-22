@@ -23,6 +23,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Streamed HTTP request handling: Node's Web `Request` constructor threw
+  `TypeError: RequestInit: duplex option is required when sending a body`
+  when the gateway POSTed JSON-RPC to `/mcp`, causing every request to fail
+  with a generic 500 and a logged error object of `{}`. The
+  `IncomingMessage`-to-`Request` conversion now lives in a `toWebRequest`
+  helper that sets `duplex: 'half'` when a body is present, and the HTTP
+  handler's catch block serializes `Error` objects so logs show `name`,
+  `message`, and `stack`. Fixes the production crash from #1.
 - HTTP transport import pointed at a non-existent SDK module
   (`@modelcontextprotocol/sdk/server/http.js`), causing an
   `ERR_MODULE_NOT_FOUND` crash on container startup. Now imports
