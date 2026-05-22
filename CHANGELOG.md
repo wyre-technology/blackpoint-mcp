@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.0.0...v1.0.1) (2026-05-22)
+
+
+### Bug Fixes
+
+* **http:** add duplex:half on streamed Request + serialize errors (fixes [#1](https://github.com/wyre-technology/blackpoint-mcp/issues/1)) ([#6](https://github.com/wyre-technology/blackpoint-mcp/issues/6)) ([1d85764](https://github.com/wyre-technology/blackpoint-mcp/commit/1d85764a9db036fcc95233c14c2abf7a1fee9755))
+
 # 1.0.0 (2026-05-22)
 
 
