@@ -3,6 +3,14 @@
 import { logger } from './utils/logger.js';
 import { runStdioServer } from './server.js';
 import { handleHttpRequest } from './http.js';
+import { toWebRequest } from './http-request.js';
+
+function serializeError(error: unknown): Record<string, unknown> {
+  if (error instanceof Error) {
+    return { name: error.name, message: error.message, stack: error.stack };
+  }
+  return { value: error };
+}
 
 const transport = process.env.MCP_TRANSPORT || 'stdio';
 const port = parseInt(process.env.MCP_HTTP_PORT || '8080', 10);
@@ -16,12 +24,7 @@ async function main(): Promise<void> {
 
       const server = createServer(async (req, res) => {
         try {
-          const url = new URL(req.url || '/', `http://${req.headers.host}`);
-          const request = new Request(url.toString(), {
-            method: req.method,
-            headers: req.headers as Record<string, string>,
-            body: req.method !== 'GET' && req.method !== 'HEAD' ? req : undefined,
-          });
+          const request = toWebRequest(req);
 
           const response = await handleHttpRequest(request);
 
@@ -33,7 +36,7 @@ async function main(): Promise<void> {
           const body = await response.text();
           res.end(body);
         } catch (error) {
-          logger.error('HTTP request handler error', error);
+          logger.error('HTTP request handler error', { err: serializeError(error) });
           res.statusCode = 500;
           res.end('Internal Server Error');
         }
@@ -50,7 +53,7 @@ async function main(): Promise<void> {
       await runStdioServer();
     }
   } catch (error) {
-    logger.error('Failed to start server', error);
+    logger.error('Failed to start server', { err: serializeError(error) });
     process.exit(1);
   }
 }
@@ -67,6 +70,6 @@ process.on('SIGTERM', () => {
 });
 
 main().catch((error) => {
-  logger.error('Unhandled error in main', error);
+  logger.error('Unhandled error in main', { err: serializeError(error) });
   process.exit(1);
 });
