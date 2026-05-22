@@ -3,6 +3,7 @@
 import { logger } from './utils/logger.js';
 import { runStdioServer } from './server.js';
 import { handleHttpRequest } from './http.js';
+import { createWebRequest } from './http-request.js';
 
 const transport = process.env.MCP_TRANSPORT || 'stdio';
 const port = parseInt(process.env.MCP_HTTP_PORT || '8080', 10);
@@ -16,12 +17,7 @@ async function main(): Promise<void> {
 
       const server = createServer(async (req, res) => {
         try {
-          const url = new URL(req.url || '/', `http://${req.headers.host}`);
-          const request = new Request(url.toString(), {
-            method: req.method,
-            headers: req.headers as Record<string, string>,
-            body: req.method !== 'GET' && req.method !== 'HEAD' ? req : undefined,
-          });
+          const request = createWebRequest(req);
 
           const response = await handleHttpRequest(request);
 

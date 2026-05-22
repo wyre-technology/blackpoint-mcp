@@ -6,6 +6,27 @@ function getConfiguredLevel(): LogLevel {
   return level && level in LEVELS ? level : 'info';
 }
 
+function serializeContext(context: unknown): unknown {
+  if (context instanceof Error) {
+    return {
+      name: context.name,
+      message: context.message,
+      stack: context.stack,
+    };
+  }
+
+  if (context && typeof context === 'object') {
+    return Object.fromEntries(
+      Object.entries(context).map(([key, value]) => [
+        key,
+        value instanceof Error ? serializeContext(value) : value,
+      ])
+    );
+  }
+
+  return context;
+}
+
 function log(level: LogLevel, message: string, context?: unknown): void {
   if (LEVELS[level] < LEVELS[getConfiguredLevel()]) return;
 
@@ -14,7 +35,7 @@ function log(level: LogLevel, message: string, context?: unknown): void {
 
   // ALL output to stderr (stdout = MCP protocol)
   if (context !== undefined) {
-    console.error(`${prefix} ${message} ${JSON.stringify(context)}`);
+    console.error(`${prefix} ${message} ${JSON.stringify(serializeContext(context))}`);
   } else {
     console.error(`${prefix} ${message}`);
   }
