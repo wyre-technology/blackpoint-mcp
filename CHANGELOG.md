@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.0...v1.1.1) (2026-05-29)
+
+
+### Bug Fixes
+
+* **ci:** bump version so registry gate fires and add required OCI label ([#19](https://github.com/wyre-technology/blackpoint-mcp/issues/19)) ([1f356f2](https://github.com/wyre-technology/blackpoint-mcp/commit/1f356f2a3b4da1c3e5d6b30962b72b4f2b392eb4))
+
 # [1.1.0](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.0.1...v1.1.0) (2026-05-29)
 
 
