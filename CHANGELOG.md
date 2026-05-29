@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.0.1...v1.1.0) (2026-05-29)
+
+
+### Features
+
+* **ci:** publish to MCP Registry on release ([#18](https://github.com/wyre-technology/blackpoint-mcp/issues/18)) ([b381766](https://github.com/wyre-technology/blackpoint-mcp/commit/b38176697207252a7bc4006b5a6a4c045646bba8))
+
 ## [1.0.1](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.0.0...v1.0.1) (2026-05-22)
 
 
