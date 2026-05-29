@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.1...v1.1.2) (2026-05-29)
+
+
+### Bug Fixes
+
+* **registry:** shorten server.json description to <=100 chars ([#20](https://github.com/wyre-technology/blackpoint-mcp/issues/20)) ([c00a92e](https://github.com/wyre-technology/blackpoint-mcp/commit/c00a92e3a9a8c9d42527ce1905ff2a159b7d3ecc))
+
 ## [1.1.1](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.0...v1.1.1) (2026-05-29)
 
 
