@@ -45,6 +45,7 @@ COPY --from=builder /app/package.json ./
 LABEL org.opencontainers.image.source=https://github.com/wyre-technology/blackpoint-mcp
 LABEL org.opencontainers.image.description="MCP server for Blackpoint Cyber CompassOne"
 LABEL org.opencontainers.image.version="0.1.0"
+LABEL io.modelcontextprotocol.server.name="io.github.wyre-technology/blackpoint-mcp"
 
 # Switch to non-root user
 USER mcp
