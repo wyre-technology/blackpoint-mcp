@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.wyre-technology/blackpoint-mcp",
   "title": "Blackpoint Cyber",
-  "description": "MCP server for Blackpoint Cyber MDR \u2014 managed detection and response alerts, threats, and operations.",
+  "description": "MCP server for Blackpoint Cyber MDR \u2014 alerts, threats, and operations.",
   "repository": {
     "url": "https://github.com/wyre-technology/blackpoint-mcp",
     "source": "github"
