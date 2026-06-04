@@ -1,28 +1,27 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { DomainHandler, CallToolResult, NavigationState, NavigationDomain } from '../utils/types.js';
 import { logger } from '../utils/logger.js';
+import { getRequestContext, freshNavigationState } from '../utils/request-context.js';
 
-// Global navigation state
-let navigationState: NavigationState = {
-  currentDomain: null,
-  availableDomains: [
-    'partners',
-    'tenants',
-    'assets',
-    'detections',
-    'cloud_security',
-    'vulnerabilities',
-    'threat_intel',
-    'notifications',
-  ],
-};
+// Per-request navigation state.
+//
+// In HTTP/gateway mode the state lives on the request's AsyncLocalStorage
+// context, so each request's navigation choices are scoped to that
+// request only. In stdio mode there is no per-request context, so we
+// fall back to a module-level state (single-tenant by design).
+const stdioNavigationState: NavigationState = freshNavigationState();
+
+function activeState(): NavigationState {
+  const ctx = getRequestContext();
+  return ctx ? ctx.navigationState : stdioNavigationState;
+}
 
 export function getNavigationState(): NavigationState {
-  return { ...navigationState };
+  return { ...activeState() };
 }
 
 export function setCurrentDomain(domain: NavigationDomain | null): void {
-  navigationState.currentDomain = domain;
+  activeState().currentDomain = domain;
   logger.info('Navigation state changed', { currentDomain: domain });
 }
 
@@ -36,7 +35,7 @@ function getTools(): Tool[] {
         properties: {
           domain: {
             type: 'string',
-            enum: navigationState.availableDomains,
+            enum: activeState().availableDomains,
             description: 'Domain to navigate to',
           },
         },
@@ -54,7 +53,7 @@ function getTools(): Tool[] {
   ];
 
   // Add back tool if we're in a domain
-  if (navigationState.currentDomain) {
+  if (activeState().currentDomain) {
     tools.push({
       name: 'blackpoint_back',
       description: 'Return to the main navigation menu',
@@ -75,12 +74,12 @@ async function handleCall(
   switch (toolName) {
     case 'blackpoint_navigate': {
       const domain = args.domain as NavigationDomain;
-      if (!navigationState.availableDomains.includes(domain)) {
+      if (!activeState().availableDomains.includes(domain)) {
         return {
           content: [
             {
               type: 'text',
-              text: `Invalid domain "${domain}". Available domains: ${navigationState.availableDomains.join(', ')}`,
+              text: `Invalid domain "${domain}". Available domains: ${activeState().availableDomains.join(', ')}`,
             },
           ],
           isError: true,
@@ -113,10 +112,10 @@ async function handleCall(
       };
 
       const statusText = [
-        `Current domain: ${navigationState.currentDomain || 'Navigation menu'}`,
+        `Current domain: ${activeState().currentDomain || 'Navigation menu'}`,
         '',
         'Available domains:',
-        ...navigationState.availableDomains.map(domain =>
+        ...activeState().availableDomains.map(domain =>
           `• ${domain}: ${domainDescriptions[domain as NavigationDomain] || 'Unknown domain'}`
         ),
         '',
