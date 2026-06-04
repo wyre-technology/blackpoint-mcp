@@ -1,8 +1,7 @@
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 import { createMcpServer } from './server.js';
 import { logger } from './utils/logger.js';
-import { resetClient } from './utils/client.js';
+import { requestContext, freshNavigationState } from './utils/request-context.js';
 
 export async function handleHttpRequest(req: Request): Promise<Response> {
   // Unauthenticated shallow health check for the Azure liveness probe.
@@ -14,21 +13,53 @@ export async function handleHttpRequest(req: Request): Promise<Response> {
     });
   }
 
-  // CRITICAL: Per-request server and transport for gateway mode
-  const server = createMcpServer();
-  const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: undefined, // STATELESS
-    enableJsonResponse: true,
-  });
-
-  // Handle gateway mode credentials
+  // Gateway mode: credentials must arrive on every request via the
+  // x-blackpoint-api-token header. Reject explicitly if missing rather
+  // than falling through — falling through would resolve credentials
+  // from the process environment, which is not request-scoped.
   if (process.env.AUTH_MODE === 'gateway') {
     const apiToken = req.headers.get('x-blackpoint-api-token');
-    if (apiToken) {
-      resetClient();
-      process.env.BLACKPOINT_API_TOKEN = apiToken;
+    if (!apiToken) {
+      return new Response(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          error: {
+            code: -32001,
+            message:
+              'Unauthorized: missing required gateway credential header x-blackpoint-api-token',
+          },
+          id: null,
+        }),
+        {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
     }
+
+    const baseUrl = process.env.BLACKPOINT_BASE_URL;
+    return requestContext.run(
+      {
+        apiToken,
+        ...(baseUrl ? { baseUrl } : {}),
+        server: null,
+        navigationState: freshNavigationState(),
+      },
+      () => runMcpRequest(req)
+    );
   }
+
+  // Stdio / env mode: credentials resolve from process.env directly,
+  // no per-request context required (single-tenant by design).
+  return runMcpRequest(req);
+}
+
+async function runMcpRequest(req: Request): Promise<Response> {
+  const server = createMcpServer();
+  const transport = new WebStandardStreamableHTTPServerTransport({
+    sessionIdGenerator: undefined,
+    enableJsonResponse: true,
+  });
 
   try {
     await server.connect(transport);

@@ -1,47 +1,38 @@
 import { CompassOneClient, CompassOneConfig } from '@wyre-technology/node-blackpoint';
 import { logger } from './logger.js';
+import { getRequestContext } from './request-context.js';
 
-let _client: CompassOneClient | null = null;
-let _credentials: CompassOneConfig | null = null;
-
-function getCredentials(): CompassOneConfig | null {
-  const apiToken = process.env.BLACKPOINT_API_TOKEN;
-  const baseUrl = process.env.BLACKPOINT_BASE_URL;
-
-  if (!apiToken) {
-    return null;
-  }
-
-  return {
-    apiToken,
-    baseUrl: baseUrl || undefined,
-  };
-}
-
+// Per-request CompassOne client.
+//
+// In HTTP/gateway mode, credentials come from AsyncLocalStorage's
+// per-request `RequestContext` — every request's handler chain sees only
+// its own apiToken / baseUrl. There is intentionally NO module-level
+// client or credential cache: tenants share this process, and a shared
+// instance with mutable state would let one tenant's handler observe
+// another tenant's client mid-request.
+//
+// In stdio mode there is no per-request context, so credentials fall
+// back to environment variables (stdio is single-tenant by design).
 export async function getClient(): Promise<CompassOneClient> {
-  const creds = getCredentials();
-  if (!creds) {
-    throw new Error('No CompassOne API credentials configured. Set BLACKPOINT_API_TOKEN environment variable.');
+  const ctx = getRequestContext();
+  if (ctx) {
+    const config: CompassOneConfig = { apiToken: ctx.apiToken };
+    if (ctx.baseUrl) config.baseUrl = ctx.baseUrl;
+    logger.debug('Creating per-request CompassOne client (gateway mode)');
+    return new CompassOneClient(config);
   }
 
-  // Invalidate cache if credentials changed (gateway injects per-request)
-  if (_client && _credentials &&
-      (creds.apiToken !== _credentials.apiToken || creds.baseUrl !== _credentials.baseUrl)) {
-    logger.debug('Credentials changed, resetting client');
-    _client = null;
+  const apiToken = process.env.BLACKPOINT_API_TOKEN;
+  if (!apiToken) {
+    throw new Error(
+      'No CompassOne API credentials configured. Set BLACKPOINT_API_TOKEN environment variable, or run behind the gateway with the x-blackpoint-api-token header.'
+    );
   }
 
-  if (!_client) {
-    logger.debug('Creating new CompassOne client');
-    _client = new CompassOneClient(creds);
-    _credentials = creds;
-  }
+  const config: CompassOneConfig = { apiToken };
+  const baseUrl = process.env.BLACKPOINT_BASE_URL;
+  if (baseUrl) config.baseUrl = baseUrl;
 
-  return _client;
-}
-
-export function resetClient(): void {
-  logger.debug('Resetting CompassOne client');
-  _client = null;
-  _credentials = null;
+  logger.debug('Creating CompassOne client from environment (stdio mode)');
+  return new CompassOneClient(config);
 }
