@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@wyre-technology/node-blackpoint": "^1.0.0"
+    "@wyre-technology/node-blackpoint": "^1.0.1"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.0",
