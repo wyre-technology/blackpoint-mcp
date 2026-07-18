@@ -1,3 +1,11 @@
+## [1.1.4](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.3...v1.1.4) (2026-07-18)
+
+
+### Bug Fixes
+
+* **deps:** bump @wyre-technology/node-blackpoint to 1.0.1 ([#38](https://github.com/wyre-technology/blackpoint-mcp/issues/38)) ([a5df95e](https://github.com/wyre-technology/blackpoint-mcp/commit/a5df95eea58c582f0e6f08c71e3d01b798f3f617)), closes [node-blackpoint#1](https://github.com/node-blackpoint/issues/1)
+* **deps:** pin typescript back to ^6.0.3, unblock tsup DTS build ([#39](https://github.com/wyre-technology/blackpoint-mcp/issues/39)) ([45ff1c8](https://github.com/wyre-technology/blackpoint-mcp/commit/45ff1c87f3c89ad3a6cd66955c64ae8cabff9110)), closes [timezest-mcp#35](https://github.com/timezest-mcp/issues/35)
+
 ## [1.1.3](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.2...v1.1.3) (2026-05-30)
 
 
