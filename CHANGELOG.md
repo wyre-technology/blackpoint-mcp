@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.4...v1.1.5) (2026-07-20)
+
+
+### Bug Fixes
+
+* **package:** bump engines.node floor to >=22.0.0 ([#40](https://github.com/wyre-technology/blackpoint-mcp/issues/40)) ([5914ec0](https://github.com/wyre-technology/blackpoint-mcp/commit/5914ec0b1dd099b31d860669d3fdc26fa279d3e2))
+
 ## [1.1.4](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.3...v1.1.4) (2026-07-18)
 
 
