@@ -1,3 +1,10 @@
+## [1.1.6](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.5...v1.1.6) (2026-07-20)
+
+
+### Bug Fixes
+
+* **deps:** exclude dev-dependency majors from Dependabot auto-merge ([#41](https://github.com/wyre-technology/blackpoint-mcp/issues/41)) ([563ec96](https://github.com/wyre-technology/blackpoint-mcp/commit/563ec96d6c6252b9f7d33dc235ae0689b538c810))
+
 ## [1.1.5](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.4...v1.1.5) (2026-07-20)
 
 
