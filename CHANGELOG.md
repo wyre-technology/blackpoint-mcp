@@ -1,3 +1,10 @@
+## [1.1.7](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.6...v1.1.7) (2026-07-22)
+
+
+### Bug Fixes
+
+* **deps:** re-pin typescript to ^6.0.3, TS7 native compiler breaks rollup-plugin-dts ([#44](https://github.com/wyre-technology/blackpoint-mcp/issues/44)) ([5a33007](https://github.com/wyre-technology/blackpoint-mcp/commit/5a33007e9cc1b12fea56ec5e72f77dd2f73f7301)), closes [#39](https://github.com/wyre-technology/blackpoint-mcp/issues/39) [#43](https://github.com/wyre-technology/blackpoint-mcp/issues/43)
+
 ## [1.1.6](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.5...v1.1.6) (2026-07-20)
 
 
