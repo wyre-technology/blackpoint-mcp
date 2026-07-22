@@ -1,46 +1,38 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
 import { CompassOneClient, CompassOneConfig } from '@wyre-technology/node-blackpoint';
+import { logger } from './logger.js';
+import { getRequestContext } from './request-context.js';
 
-/**
- * Request-scoped credentials.
- *
- * In gateway mode the HTTP layer runs each request inside
- * runWithCredentials(...), so concurrent requests from different tenants never
- * share credential state. In stdio / single-tenant mode there is no scope and
- * getCredentials() falls back to the process environment.
- */
-const credStore = new AsyncLocalStorage<CompassOneConfig>();
-
-export function runWithCredentials<T>(creds: CompassOneConfig, fn: () => T): T {
-  return credStore.run(creds, fn);
-}
-
-/** Resolve credentials from the request scope, falling back to env vars. */
-function getCredentials(): CompassOneConfig | null {
-  const scoped = credStore.getStore();
-  if (scoped?.apiToken) return scoped;
+// Per-request CompassOne client.
+//
+// In HTTP/gateway mode, credentials come from AsyncLocalStorage's
+// per-request `RequestContext` — every request's handler chain sees only
+// its own apiToken / baseUrl. There is intentionally NO module-level
+// client or credential cache: tenants share this process, and a shared
+// instance with mutable state would let one tenant's handler observe
+// another tenant's client mid-request.
+//
+// In stdio mode there is no per-request context, so credentials fall
+// back to environment variables (stdio is single-tenant by design).
+export async function getClient(): Promise<CompassOneClient> {
+  const ctx = getRequestContext();
+  if (ctx) {
+    const config: CompassOneConfig = { apiToken: ctx.apiToken };
+    if (ctx.baseUrl) config.baseUrl = ctx.baseUrl;
+    logger.debug('Creating per-request CompassOne client (gateway mode)');
+    return new CompassOneClient(config);
+  }
 
   const apiToken = process.env.BLACKPOINT_API_TOKEN;
-  if (!apiToken) return null;
-
-  return {
-    apiToken,
-    baseUrl: process.env.BLACKPOINT_BASE_URL || undefined,
-  };
-}
-
-/**
- * Build a CompassOne client from the credentials in scope.
- *
- * A fresh client is constructed on every call and never cached in a
- * module-level variable. A shared singleton keyed off mutable global state is
- * exactly how one tenant's request can end up using another tenant's token
- * under concurrency, so credentials stay request-scoped end to end.
- */
-export async function getClient(): Promise<CompassOneClient> {
-  const creds = getCredentials();
-  if (!creds) {
-    throw new Error('No CompassOne API credentials configured. Set BLACKPOINT_API_TOKEN environment variable.');
+  if (!apiToken) {
+    throw new Error(
+      'No CompassOne API credentials configured. Set BLACKPOINT_API_TOKEN environment variable, or run behind the gateway with the x-blackpoint-api-token header.'
+    );
   }
-  return new CompassOneClient(creds);
+
+  const config: CompassOneConfig = { apiToken };
+  const baseUrl = process.env.BLACKPOINT_BASE_URL;
+  if (baseUrl) config.baseUrl = baseUrl;
+
+  logger.debug('Creating CompassOne client from environment (stdio mode)');
+  return new CompassOneClient(config);
 }
