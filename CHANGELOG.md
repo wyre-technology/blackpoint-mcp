@@ -1,3 +1,10 @@
+## [1.1.9](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.8...v1.1.9) (2026-07-22)
+
+
+### Bug Fixes
+
+* **http:** per-request context via AsyncLocalStorage for proper tenant isolation ([#24](https://github.com/wyre-technology/blackpoint-mcp/issues/24)) ([d67f3fb](https://github.com/wyre-technology/blackpoint-mcp/commit/d67f3fbdbc0ebb446714b4c0545ad130dbe112f8)), closes [#131](https://github.com/wyre-technology/blackpoint-mcp/issues/131)
+
 ## [1.1.8](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.7...v1.1.8) (2026-07-22)
 
 
