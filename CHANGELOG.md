@@ -1,3 +1,10 @@
+## [1.1.8](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.7...v1.1.8) (2026-07-22)
+
+
+### Bug Fixes
+
+* **gateway:** harden per-request credential isolation ([#45](https://github.com/wyre-technology/blackpoint-mcp/issues/45)) ([e590b17](https://github.com/wyre-technology/blackpoint-mcp/commit/e590b175b87eb2289fd02432351413109ccb9a0a))
+
 ## [1.1.7](https://github.com/wyre-technology/blackpoint-mcp/compare/v1.1.6...v1.1.7) (2026-07-22)
 
 
